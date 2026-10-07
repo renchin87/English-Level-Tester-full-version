@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>12Б • ЭЕШ English 800</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#64748b;--primary:#2563eb;--border:#e2e8f0;--good:#16a34a;--bad:#dc2626;--warn:#f59e0b;--gold:#eab308}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+body.dark{--bg:#0f172a;--card:#172033;--text:#f8fafc;--muted:#94a3b8;--border:#334155}
+.container{max-width:900px;margin:auto;padding:18px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;margin:14px 0}
+h1,h2,h3{margin-top:0}
+button{border:0;border-radius:12px;padding:12px 16px;background:var(--primary);color:#fff;font-weight:bold;cursor:pointer;font-size:14px}
+button.secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
+button.danger{background:var(--bad)}
+button.sel{outline:3px solid var(--warn)}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.levels button{height:65px}
+.modes{display:flex;gap:8px;flex-wrap:wrap}
+.options{display:grid;gap:10px;margin-top:20px}
+.option{background:transparent;color:var(--text);border:1px solid var(--border);text-align:left;padding:12px 16px}
+.option.correct{border-color:var(--good);background:#16a34a18}
+.option.wrong{border-color:var(--bad);background:#dc262618}
+.progress{height:8px;background:var(--border);border-radius:10px;overflow:hidden;margin:15px 0}
+.progress-bar{height:100%;background:var(--primary);width:0;transition:width .25s}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{padding:6px 10px;border:1px solid var(--border);border-radius:20px;font-size:14px}
+.pill.gold{border-color:var(--gold);background:#facc1522;color:#a16207;font-weight:bold}
+.hidden{display:none!important}
+.feedback{padding:14px;border-radius:12px;margin:15px 0;line-height:1.6}
+.feedback.good{background:#16a34a18;border:1px solid var(--good)}
+.feedback.bad{background:#dc262618;border:1px solid var(--bad)}
+.review-item{padding:14px;margin:10px 0;border-radius:12px;border-left:5px solid var(--good);background:var(--bg);line-height:1.6}
+.review-item.wrong{border-left-color:var(--bad)}
+.review-item .q-num{display:inline-block;background:var(--primary);color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;margin-right:8px}
+.review-item .q-text{font-weight:bold;margin-bottom:10px;font-size:15px}
+.review-item .ans-line{padding:6px 10px;margin:4px 0;border-radius:8px;font-size:14px}
+.review-item .ans-line.user{background:#dc262615}
+.review-item .ans-line.correct{background:#16a34a15}
+.review-item .mn-line{font-size:13px;color:var(--muted);margin-top:2px}
+.review-item .exp{margin-top:10px;padding:10px;background:#2563eb10;border-radius:8px;font-size:14px;border-left:3px solid var(--primary)}
+input,select{width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;background:transparent;color:var(--text);font-size:16px;margin-bottom:10px}
+.small{font-size:13px;color:var(--muted)}
+.tabs{display:flex;gap:8px;margin-bottom:15px;flex-wrap:wrap}
+.tabs button{background:transparent;color:var(--text);border:1px solid var(--border)}
+.tabs button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:15px 0}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.stat b{display:block;font-size:24px;color:var(--primary);margin-bottom:4px}
+.stat.gold b{color:var(--gold)}
+.history-item{border:1px solid var(--border);border-radius:12px;padding:12px;margin:8px 0;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:bold}
+.badge.good{background:#16a34a22;color:var(--good)}
+.badge.mid{background:#f59e0b22;color:var(--warn)}
+.badge.bad{background:#dc262622;color:var(--bad)}
+.badge.gold{background:#facc1522;color:#a16207}
+.user-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.user-chip{display:flex;align-items:center;gap:10px}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold}
+.error{color:var(--bad);font-size:14px;margin:8px 0}
+.score-hero{background:linear-gradient(135deg,#facc15,#f59e0b);color:#1c1917;border-radius:16px;padding:20px;text-align:center;margin:15px 0}
+.score-hero .big{font-size:48px;font-weight:bold;line-height:1}
+.score-hero .lbl{font-size:14px;opacity:0.8}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .logo-mini{width:50px;height:50px;flex-shrink:0}
+.brand h1{font-size:20px;margin:0;line-height:1.1}
+.brand .sub{font-size:12px;color:var(--muted);letter-spacing:1px}
+.logo-page-wrap{display:flex;flex-direction:column;align-items:center;padding:20px 0}
+.logo-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;justify-content:center}
+@media(max-width:600px){.container{padding:10px}.card{padding:15px}.levels{grid-template-columns:repeat(2,1fr)}.score-hero .big{font-size:38px}.brand h1{font-size:16px}.brand .logo-mini{width:42px;height:42px}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fde68a"/><stop offset="50%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#1e40af"/>
+    </linearGradient>
+    <linearGradient id="white" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <radialGradient id="shine" cx="50%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#fff8e1" stop-opacity="0.7"/><stop offset="100%" stop-color="#fff8e1" stop-opacity="0"/>
+    </radialGradient>
+    <symbol id="logo-symbol" viewBox="0 0 380 380">
+      <circle cx="190" cy="190" r="180" fill="#0a0f1e" stroke="url(#gold)" stroke-width="3"/>
+      <circle cx="190" cy="190" r="168" fill="none" stroke="url(#gold)" stroke-width="1" opacity="0.5"/>
+      <circle cx="190" cy="190" r="120" fill="none" stroke="url(#blue)" stroke-width="2" opacity="0.6"/>
+      <g fill="url(#gold)" opacity="0.9">
+        <circle cx="190" cy="28" r="3"/><circle cx="243" cy="35" r="3"/><circle cx="290" cy="60" r="3"/>
+        <circle cx="328" cy="105" r="3"/><circle cx="345" cy="160" r="3"/><circle cx="345" cy="220" r="3"/>
+        <circle cx="328" cy="275" r="3"/><circle cx="290" cy="320" r="3"/><circle cx="243" cy="345" r="3"/>
+        <circle cx="190" cy="352" r="3"/><circle cx="137" cy="345" r="3"/><circle cx="90" cy="320" r="3"/>
+        <circle cx="52" cy="275" r="3"/><circle cx="35" cy="220" r="3"/><circle cx="35" cy="160" r="3"/>
+        <circle cx="52" cy="105" r="3"/><circle cx="90" cy="60" r="3"/><circle cx="137" cy="35" r="3"/>
+      </g>
+      <path id="topArc" d="M 60,190 A 130,130 0 0 1 320,190" fill="none"/>
+      <text font-family="Georgia,serif" font-size="20" fill="url(#gold)" font-weight="bold" letter-spacing="6">
+        <textPath href="#topArc" startOffset="50%" text-anchor="middle">12Б АНГИ</textPath>
+      </text>
+      <path id="bottomArc" d="M 60,190 A 130,130 0 0 0 320,190" fill="none"/>
+      <text font-family="Georgia,serif" font-size="18" fill="url(#gold)" font-weight="bold" letter-spacing="8">
+        <textPath href="#bottomArc" startOffset="50%" text-anchor="middle">МОНГОЛ УЛС</textPath>
+      </text>
+      <circle cx="190" cy="190" r="100" fill="url(#blue)" opacity="0.15"/>
+      <circle cx="190" cy="190" r="100" fill="none" stroke="url(#gold)" stroke-width="1.5"/>
+      <g transform="translate(190,258)">
+        <path d="M -55,0 L 0,-15 L 55,0 L 55,20 L 0,5 L -55,20 Z" fill="url(#white)" opacity="0.95"/>
+        <path d="M -55,0 L 0,-15 L 0,5 L -55,20 Z" fill="#e2e8f0"/>
+        <path d="M 0,-15 L 55,0 L 55,20 L 0,5 Z" fill="#f1f5f9"/>
+        <line x1="0" y1="-15" x2="0" y2="5" stroke="#94a3b8" stroke-width="1.5"/>
+        <path d="M -55,10 L 0,-5 L 55,10 L 55,30 L 0,15 L -55,30 Z" fill="url(#white)" opacity="0.85"/>
+        <line x1="0" y1="-5" x2="0" y2="15" stroke="#94a3b8" stroke-width="1.5"/>
+      </g>
+      <text x="190" y="185" text-anchor="middle" font-family="Georgia,serif" font-size="130" font-weight="bold" fill="url(#gold)" stroke="#78350f" stroke-width="1">12</text>
+      <text x="190" y="245" text-anchor="middle" font-family="Georgia,serif" font-size="78" font-weight="bold" fill="url(#white)" stroke="#1e3a8a" stroke-width="1">Б</text>
+      <circle cx="190" cy="190" r="180" fill="url(#shine)"/>
+      <path d="M 130,322 L 250,322" stroke="url(#gold)" stroke-width="2"/>
+      <circle cx="130" cy="322" r="3" fill="url(#gold)"/>
+      <circle cx="250" cy="322" r="3" fill="url(#gold)"/>
+      <g transform="translate(190,338)" fill="url(#gold)">
+        <polygon points="0,-10 3,-3 10,-3 4.5,1.5 6.5,9 0,4.5 -6.5,9 -4.5,1.5 -10,-3 -3,-3"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="container">
+<div class="top">
+  <div class="brand">
+    <svg class="logo-mini" viewBox="0 0 380 380"><use href="#logo-symbol"/></svg>
+    <div>
+      <h1>12Б • ЭЕШ English 800</h1>
+      <div class="sub">CLASS OF 2026</div>
+    </div>
+  </div>
+  <div class="user-bar">
+    <button class="secondary" onclick="showLogoPage()" title="Лого">🎨</button>
+    <button class="secondary" onclick="toggleDark()">🌙</button>
+    <span id="userInfo" class="small"></span>
+  </div>
+</div>
+
+<div id="authScreen" class="card">
+  <div style="text-align:center;margin-bottom:15px">
+    <svg viewBox="0 0 380 380" style="width:140px;height:140px"><use href="#logo-symbol"/></svg>
+  </div>
+  <h2 style="text-align:center">👋 Тавтай морил, ирээдүйн 800 оноо!</h2>
+  <div class="tabs">
+    <button id="tabLogin" class="active" onclick="switchAuth('login')">Нэвтрэх</button>
+    <button id="tabRegister" onclick="switchAuth('register')">Бүртгүүлэх</button>
+  </div>
+  <div id="loginForm">
+    <label class="small">Нэвтрэх нэр</label>
+    <input id="loginName" placeholder="username" autocomplete="username">
+    <label class="small">Нууц үг</label>
+    <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password">
+    <div id="loginError" class="error"></div>
+    <button onclick="doLogin()" style="width:100%">🔓 Нэвтрэх</button>
+  </div>
+  <div id="registerForm" class="hidden">
+    <label class="small">Нэвтрэх нэр (3+)</label>
+    <input id="regName" placeholder="username" autocomplete="username">
+    <label class="small">Нууц үг (4+)</label>
+    <input id="regPass" type="password" placeholder="••••••••" autocomplete="new-password">
+    <label class="small">Нууц үг давтах</label>
+    <input id="regPass2" type="password" placeholder="••••••••" autocomplete="new-password">
+    <label class="small">Бүтэн нэр</label>
+    <input id="regFullName" placeholder="Бат-Эрдэнэ">
+    <div id="regError" class="error"></div>
+    <button onclick="doRegister()" style="width:100%">✍️ Бүртгүүлэх</button>
+  </div>
+  <p class="small" style="margin-top:15px">💡 Browser-ийн localStorage-д хадгалагдана.</p>
+</div>
+
+<div id="home" class="card hidden">
+  <div style="display:flex;gap:15px;align-items:center;flex-wrap:wrap">
+    <svg viewBox="0 0 380 380" style="width:100px;height:100px;flex-shrink:0"><use href="#logo-symbol"/></svg>
+    <div style="flex:1;min-width:180px">
+      <h2 style="margin-bottom:6px">Сайн байна уу, <span id="helloName"></span>! 🎯</h2>
+      <p class="small" style="margin:0">Зорилго: <b>ЭЕШ-д 800 оноо</b> • Тест бүр <b>30 асуулт</b> • Оноо <b>800-аар</b></p>
+    </div>
+  </div>
+  <p class="small">Түвшин бүрт <b>300 Grammar + 300 Vocabulary</b>, нийт <b>10 тест</b> (loop).</p>
+  <h3 style="margin-top:20px">1. Түвшин сонгох</h3>
+  <div class="levels" id="levelBtns"></div>
+  <h3 style="margin-top:20px">2. Тестийн төрөл</h3>
+  <div class="modes" id="modeBtns">
+    <button data-m="grammar" onclick="selectMode('grammar')">Grammar</button>
+    <button data-m="vocabulary" onclick="selectMode('vocabulary')">Vocabulary</button>
+    <button data-m="mixed" onclick="selectMode('mixed')">Mixed (ЭЕШ)</button>
+  </div>
+  <p id="selection">Түвшин болон тестийн төрлөө сонгоно уу.</p>
+  <p id="setInfo" class="small"></p>
+  <button onclick="startTest()" style="width:100%;margin-top:10px">▶ Тест эхлүүлэх</button>
+</div>
+
+<div id="quiz" class="card hidden">
+  <div class="top">
+    <span id="questionNumber" class="pill">1 / 30</span>
+    <span id="setLabel" class="pill"></span>
+    <span id="currentScore" class="pill gold">🎯 0/800</span>
+  </div>
+  <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+  <h2 id="questionText"></h2>
+  <div id="options" class="options"></div>
+  <div id="feedback" class="hidden"></div>
+  <button id="nextButton" class="hidden" onclick="nextQuestion()">Дараагийн асуулт →</button>
+</div>
+
+<div id="result" class="card hidden">
+  <h2>🎉 Тест дууслаа!</h2>
+  <div id="resultContent"></div>
+  <h3 style="margin-top:25px">📖 Бүх асуултын дэлгэрэнгүй тайлбар</h3>
+  <p class="small">Зөв хариулт ногоон, буруу хариулт улаанаар тэмдэглэгдсэн. Монгол орчуулга хамт харагдана.</p>
+  <div id="fullReview"></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px">
+    <button onclick="goHome()">↩ Нүүр хуудас</button>
+    <button class="secondary" onclick="showProfile()">👤 Профайл</button>
+    <button class="secondary" onclick="showHistory()">📜 Түүх</button>
+  </div>
+</div>
+
+<div id="profile" class="card hidden">
+  <div class="top">
+    <h2>👤 Профайл</h2>
+    <button class="secondary" onclick="goHome()">← Буцах</button>
+  </div>
+  <div class="user-chip" style="margin:15px 0">
+    <div id="profileAvatar" class="avatar"></div>
+    <div>
+      <div><b id="profileName"></b></div>
+      <div class="small" id="profileFullName"></div>
+    </div>
+  </div>
+  <h3>📊 Статистик</h3>
+  <div class="stat-grid" id="profileStats"></div>
+  <h3>📜 Сүүлийн 5 тест</h3>
+  <div id="profileRecent"></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px">
+    <button onclick="showHistory()">📜 Бүх түүх</button>
+    <button class="secondary" onclick="showLogoPage()">🎨 12Б Лого</button>
+    <button class="danger" onclick="doLogout()">🚪 Гарах</button>
+  </div>
+</div>
+
+<div id="history" class="card hidden">
+  <div class="top">
+    <h2>📜 Тестийн түүх</h2>
+    <button class="secondary" onclick="goHome()">← Буцах</button>
+  </div>
+  <div class="tabs" style="margin-top:15px">
+    <button id="fAll" class="active" onclick="filterHistory('all')">Бүгд</button>
+    <button id="fA1" onclick="filterHistory('A1')">A1</button>
+    <button id="fA2" onclick="filterHistory('A2')">A2</button>
+    <button id="fB1" onclick="filterHistory('B1')">B1</button>
+    <button id="fB2" onclick="filterHistory('B2')">B2</button>
+    <button id="fC1" onclick="filterHistory('C1')">C1</button>
+    <button id="fC2" onclick="filterHistory('C2')">C2</button>
+  </div>
+  <div id="historyList"></div>
+  <button class="danger" style="margin-top:15px" onclick="clearHistory()">🗑 Бүх түүхийг устгах</button>
+</div>
+
+<div id="logoPage" class="card hidden">
+  <div class="top">
+    <h2>🎨 12Б Ангийн Лого</h2>
+    <button class="secondary" onclick="goHome()">← Буцах</button>
+  </div>
+  <div class="logo-page-wrap">
+    <svg id="bigLogo" viewBox="0 0 380 380" style="width:340px;max-width:100%"><use href="#logo-symbol"/></svg>
+  </div>
+  <p class="small" style="text-align:center">Футболк, баннер, дэвтэр, diplom-д ашиглахад тохиромжтой.</p>
+  <div class="logo-actions">
+    <button onclick="downloadPNG()">⬇ PNG татах (1000×1000)</button>
+    <button class="secondary" onclick="downloadSVG()">⬇ SVG татах</button>
+  </div>
+</div>
+</div>
+
+<script>
+/* ===== QUESTION BANK =====
+   Формат: "асуулт|opt1/opt2/opt3/opt4|зөв_index|тайлбар_mn|mn1/mn2/mn3/mn4"
+*/
+const RAW = {
+A1:{g:[
+"I ___ a student.|am/is/are/be|0|I-тэй хамт am хэрэглэнэ.|байна/байна/байна/байх",
+"She ___ from Mongolia.|am/is/are/be|1|She (тэр, эмэгтэй)-тэй is хэрэглэнэ.|байна/байна/байна/байх",
+"They ___ my friends.|am/is/are/be|2|They (тэд)-тэй are хэрэглэнэ.|байна/байна/байна/байх",
+"He ___ football every day.|play/plays/playing/played|1|He/she/it-д одоогийн цагт -s залгана.|тоглох/тоглодог/тоглож байгаа/тоглосон",
+"I ___ to school yesterday.|go/goes/went/going|2|Yesterday (өчигдөр) нь өнгөрсөн цаг шаардана.|явах/явдаг/явсан/явж байгаа",
+"There ___ three students here.|is/are/am/be|1|Three students (3 сурагч) олон тоо тул are.|байна/байна/байна/байх",
+"I have ___ apple.|a/an/the/some|1|Apple нь эгшгээр эхэлдэг тул an.|нэг/нэг (эгшиг)/тэр/зарим",
+"The cat is ___ the table.|on/at/to/from|0|On нь гадаргуу дээр гэсэн утгатай.|дээр/дээр/руу/-аас",
+"This book is ___.|my/me/mine/I|2|Mine нь дангаараа хэрэглэгдэнэ (минийх).|миний/намайг/минийх/би",
+"Tom ___ swim.|can/cans/is can/can to|0|Can + үндсэн үйл үг (дүрэм).|чадна/чадна/чадна/чадна",
+"You ___ smoke here.|can/must/mustn't/are|2|Mustn't нь хориглолыг илэрхийлнэ.|чадна/ёстой/хориглоно/байна",
+"___ do you live?|What/Where/Who/How many|1|Where нь газар асууна.|юу/хаана/хэн/хэдэн"],
+v:[
+"A person who teaches students is a ___.|teacher/doctor/driver/farmer|0|Teacher нь сурагчдад хичээл заадаг.|багш/эмч/жолооч/фермер",
+"My mother's brother is my ___.|cousin/uncle/nephew/grandson|1|Ээжийн ах/дүү бол uncle.|үеэл/авга ах/зээ/ач",
+"You borrow books from a ___.|library/bank/bakery/garage|0|Library нь ном зээлдэг газар.|номын сан/банк/талхны газар/гараж",
+"We cook food in the ___.|bedroom/kitchen/garden/bathroom|1|Kitchen нь хоол хийх газар.|унтлагын өрөө/гал тогоо/цэцэрлэг/угаалгын өрөө",
+"The opposite of early is ___.|fast/late/quick/first|1|Late нь early-гийн эсрэг утга.|хурдан/оройтсон/хурдан/эхний",
+"It is raining, take an ___.|umbrella/wallet/camera/pillow|0|Umbrella нь борооноос хамгаална.|шүхэр/түрийвч/камер/дэр"]},
+A2:{g:[
+"At 8 pm, I ___ dinner.|eat/was eating/have eaten/am eating|1|Өнгөрсөн тодорхой цагт үргэлжилж байсан үйлдэл → Past Continuous.|иддэг/идэж байсан/идсэн/идэж байна",
+"My car is ___ than yours.|fast/faster/fastest/more fast|1|Богино тэмдэг нэрэнд -er залгана.|хурдан/илүү хурдан/хамгийн хурдан/илүү хурдан",
+"I think it ___ tomorrow.|rains/rained/will rain/rain|2|Will нь ирээдүйн таамаглалд хэрэглэгдэнэ.|бороо ордог/орсон/бороо орно/бороо орох",
+"She ___ already finished.|has/have/had/is|0|She + has + past participle (гуравдугаар бие).|байна/байна/байсан/байна",
+"If it rains, we ___ home.|stay/will stay/stayed/would stay|1|1-р нөхцөл: if + present, will + base verb.|үлдэх/үлдэнэ/үлдсэн/үлдэх байсан",
+"He enjoys ___ books.|read/to read/reading/reads|2|Enjoy-ийн дараа gerund (-ing) орно.|унших/унших/унших/уншдаг",
+"You ___ see a doctor.|should/mustn't/can't/wouldn't|0|Should нь зөвлөгөө өгнө.|ёстой/хориглоно/чадахгүй/чадахгүй",
+"I'm interested ___ music.|on/at/in/for|2|Interested in гэсэн тогтсон хэллэг.|дээр/дээр/-д/-д",
+"She has lived here ___ 2020.|for/since/during/from|1|Since + эхлэх цэг (тодорхой цаг).|турш/-аас хойш/үед/-аас",
+"I have known him ___ five years.|since/for/at/during|1|For + үргэлжлэх хугацааны урт.|-аас хойш/турш/үед/үед",
+"There isn't ___ milk.|some/any/many/few|1|Сөрөг өгүүлбэрт any хэрэглэнэ.|зарим/ямар нэг/олон/цөөн",
+"I used to ___ football.|play/playing/played/plays|0|Used to + үндсэн үйл үг.|тоглох/тоглох/тоглосон/тоглодог"],
+v:[
+"We booked a ___ at a hotel.|room/road/ticket/station|0|Зочид буудалд room (өрөө) захиалдаг.|өрөө/зам/тасалбар/буудал",
+"We should ___ plastic waste.|reduce/invite/arrive/repeat|0|Reduce waste = хог хаягдлыг багасгах.|багасгах/урих/хүрэх/давтах",
+"Please ___ the lights when you leave.|turn off/look up/put on/take after|0|Turn off = унтраах.|унтраах/харах/өмсөх/адилхан байх",
+"Please ___ your phone before the battery dies.|charge/borrow/print/fold|0|Charge = цэнэглэх.|цэнэглэх/зээлэх/хэвлэх/эвхэх",
+"I was ___ because I passed the exam.|proud/angry/bored/rude|0|Шалгалт өгсөн бол proud (бахархал) мэдрэнэ.|бахархалтай/уурласан/уйтгартай/бүдүүлэг",
+"A person who designs buildings is an ___.|architect/actor/driver/farmer|0|Architect = барилга зохион бүтээгч.|архитектор/жүжигчин/жолооч/фермер"]},
+B1:{g:[
+"I ___ this film before.|see/saw/have seen/am seeing|2|Тодорхой бус цагт туршлага → Present Perfect.|үзэх/үзсэн/үзсэн/үзэж байна",
+"If I had more time, I ___ more.|travel/will travel/would travel/traveled|2|2-р нөхцөл: would + base verb.|аялах/аялна/аялах байсан/аялсан",
+"The bridge ___ in 1990.|built/was built/is built/has build|1|Өнгөрсөн пассив = was/were + past participle.|барьсан/баригдсан/баригддаг/барьсан",
+"She said she ___ tired.|is/was/will be/has|1|Хүүрнэл зүйд is → was болж буцна.|байна/байсан/байх/байна",
+"I decided ___ early.|leave/leaving/to leave/left|2|Decide + to-infinitive (to + үйл үг).|явах/явж/явахаар/явсан",
+"That's the book ___ I told you about.|who/where/which/when|2|Which нь эд зүйлд хэрэглэгдэнэ.|хэн/хаана/юу/хэзээ",
+"By the time I arrived, they ___.|left/had left/leave/have leave|1|Past Perfect нь өмнөх үйлдлийг илэрхийлнэ.|явсан/явсан байсан/явах/явсан",
+"I have been studying ___ two hours.|since/for/from/during|1|For + үргэлжлэх хугацаа.|-аас хойш/турш/-аас/үед",
+"He suggested ___ earlier.|leave/to leave/leaving/left|2|Suggest + gerund (-ing).|явах/явах/явахыг/явсан",
+"I look forward to ___ you.|see/seeing/saw/seen|1|Look forward to + gerund (-ing).|харах/харахыг/харсан/харсан",
+"The man ___ car was stolen called the police.|who/which/whose/where|2|Whose нь эзэмшлийг илэрхийлнэ.|хэн/юу/хэний/хаана",
+"She finished ___ she was tired.|although/despite/because/unless|0|Although нь эсрэгцэл гишүүн өгүүлбэрийг холбоно.|хэдийгээр/хэдийгээр/-с/хэрэв"],
+v:[
+"Someone who always tells the truth is ___.|honest/selfish/lazy/rude|0|Honest = шударга, үнэнийг хэлдэг.|шударга/аминч/залхуу/бүдүүлэг",
+"Could you ___ me a favor?|do/make/take/give|0|Do a favor гэсэн тогтсон хэллэг.|хийх/хийх/авах/өгөх",
+"She applied ___ a new position.|for/to/at/with|0|Apply for = ажилд хүсэлт гаргах.|-д хүсэлт/руу/-д/-тай",
+"I need to ___ some money from the bank.|withdraw/invent/attend/behave|0|Withdraw = банкнаас мөнгө авах.|авах/зохиох/оролцох/биеэ авч явах",
+"We need to ___ a solution.|come up with/look after/turn into/get off|0|Come up with = шийдэл олох.|олох/харах/болох/буух",
+"The story quickly ___.|went viral/went asleep/went narrow/went silent|0|Went viral = хурдан тархсан.|вирал болсон/унтсан/нарийн болсон/чимээгүй болсон"]},
+B2:{g:[
+"If I had known, I ___.|call/would call/would have called/called|2|3-р нөхцөл: would have + past participle.|залгах/залгах/залгах байсан/залгасан",
+"If I had studied medicine, I ___ a doctor now.|am/would be/would have been/was|1|Холимог нөхцөл: өнгөрсөн + одоо.|байна/байх байсан/байх байсан/байсан",
+"Rarely ___ such a beautiful view.|I have seen/have I seen/I saw/did I saw|1|Rarely эхэнд → инверсия (aux + subject).|би харсан/би харсан/би харсан/би харсан",
+"I had my car ___ yesterday.|repair/repaired/repairing/to repair|1|Causative: have + object + past participle.|засах/засуулсан/засаж/засах",
+"I wish I ___ more confident.|am/were/will be/have been|1|Wish + were (бодит бус одоогийн байдал).|байна/байсан/байх/байсан",
+"You ___ told me earlier.|should have/should/must/can|0|Should have + past participle = гэмших.|хэлэх ёстой байсан/хэлэх ёстой/хэлэх ёстой/хэлж чадна",
+"___ the report, she left.|Finish/Having finished/To finishing/Finished she|1|Having + past participle = өмнөх дууссан үйлдэл.|дуусгах/дуусгасны дараа/дуусгах/дуусгасан",
+"___ the rain, they played outside.|Despite/Although/Because/Unless|0|Despite + нэр үг/gerund.|хэдийгээр/хэдийгээр/-с/хэрэв",
+"The proposal, ___ was rejected, had been revised twice.|that/which/what/where|1|Тодорхойлох бус хамаатуулах өгүүлбэрт which.|тэр/тэр/юу/хаана",
+"It is essential that he ___ on time.|is/be/was/will be|1|Subjunctive: үндсэн хэлбэр (be).|байна/байх/байсан/байх",
+"No sooner had he arrived ___ the phone rang.|when/than/then/that|1|No sooner...than гэсэн хэллэг.|хэзээ/-аас өмнө/тэгээд/тэр",
+"The more you practise, ___ you become.|better/the better/best/the best|1|The + харьцуулсан, the + харьцуулсан.|сайн/илүү сайн/хамгийн сайн/хамгийн сайн"],
+v:[
+"The study provides ___ evidence for the theory.|substantial/tiny/accidental/casual|0|Substantial = их хэмжээний.|их хэмжээний/жижиг/санамсаргүй/энгийн",
+"The company aims to ___ costs.|cut/grow/borrow/invite|0|Cut costs = зардлыг бууруулах.|бууруулах/өсгөх/зээлэх/урих",
+"The policy may have far-reaching ___.|implications/ingredients/invitations/interruptions|0|Implications = үр дагавар.|үр дагавар/орц/урилга/саад",
+"The software is no longer ___.|compatible/curious/generous/familiar|0|Compatible = нийцтэй, хамт ажилладаг.|нийцтэй/сэтгэл хөдөлсөн/өгөөмөр/танил",
+"The court ___ the decision.|upheld/cooked/borrowed/folded|0|Upheld = шийдвэрийг баталгаажуулах.|баталгаажуулсан/чанасан/зээлсэн/эвхсэн",
+"The meeting was ___ until Friday.|put off/put on/put out/put up|0|Put off = хойшлуулах.|хойшлуулсан/өмсөх/унтраах/барих"]},
+C1:{g:[
+"Not only ___ late, but he forgot the files.|he was/was he/he is/is he|1|Not only эхэнд → инверсия.|тэр байсан/тэр байсан/тэр байна/тэр байна",
+"What I need ___ a break.|are/is/be/were|1|Ганц тооны complement → is.|байна/байна/байх/байсан",
+"She ___ the message; she replied immediately.|must have read/should read/can read/would read|0|Must have + past participle = хүчтэй дүгнэлт.|уншсан байх/унших ёстой/унших чадна/унших",
+"___ all the evidence, the jury reached a decision.|Considered/Having considered/Consider/To considered|1|Having + past participle = өмнөх дууссан үйлдэл.|харгалзсан/харгалзсаны дараа/харгалзах/харгалзах",
+"Much as I ___ the idea, I cannot agree.|like/likes/liking/liked|0|Much as = though (хэдийгээр).|дуртай/дуртай/дуртай/дуртай",
+"I ordered the vegetarian meal, and ___ did she.|too/so/also/such|1|So + aux + subject (мөн адил).|бас/бас/бас/тийм",
+"Only after the meeting ___ the error.|we noticed/did we notice/we had notice/noticed we|1|Only after эхэнд → инверсия.|бид анзаарсан/бид анзаарсан/бид анзаарсан/анзаарсан бид",
+"Hardly had she arrived ___ the meeting began.|than/when/then/that|1|Hardly...when гэсэн хэллэг.|-аас/хэзээ/тэгээд/тэр",
+"I regret ___ you that the application failed.|inform/to inform/informing/informed|1|Regret to inform = муу мэдээ хэлэх.|мэдэгдэх/мэдэгдэх/мэдэгдэх/мэдэгдсэн",
+"He is believed ___ abroad.|live/living/to live/lived|2|Пассив хүүрнэл + to-infinitive.|амьдрах/амьдарч/амьдрах/амьдарсан",
+"The report is worth ___.|read/to read/reading/reads|2|Worth + gerund (-ing).|унших/унших/унших/уншдаг",
+"She objected to ___ treated unfairly.|be/being/been/was|1|Object to + gerund (-ing).|байх/байхыг/байсан/байсан"],
+v:[
+"The findings are broadly ___ with previous research.|consistent/curious/fragile/ordinary|0|Consistent with = нийцэж байгаа.|нийцтэй/сэтгэл хөдөлсөн/эмзэг/энгийн",
+"The author ___ the assumption.|challenges/cooks/borrows/folds|0|Challenge = эсэргүүцэх, сорих.|эсэргүүцсэн/чанасан/зээлсэн/эвхсэн",
+"The policy could have ___ consequences.|unintended/sleepy/decorative/musical|0|Unintended = санамсаргүй үүссэн.|санамсаргүй/нойрмог/чимэглэл/хөгжмийн",
+"The sample was too small to draw ___ conclusions.|definitive/delicious/portable/shallow|0|Definitive = эцсийн, баттай.|эцсийн/амттай/зөөврийн/гүехэн",
+"The argument requires a more ___ analysis.|nuanced/sleepy/wooden/edible|0|Nuanced = нарийн ялгааг харуулсан.|нарийн/нойрмог/модон/идэж болох",
+"The report offers a ___ assessment.|comprehensive/hungry/circular/fragile|0|Comprehensive = цогц, бүрэн.|цогц/өлссөн/дугуй/эмзэг"]},
+C2:{g:[
+"Had I known, I ___.|act/would have acted/will act/acted|1|Инверсия 3-р нөхцөл (Had I known).|үйлдэх/үйлдэх байсан/үйлдэх/үйлдсэн",
+"He needn't ___ so much effort into it.|have put/putting/to put/has put|0|Needn't have + past participle = шаардлагагүй байсан.|хийсэн байх/хийх/хийх/хийсэн",
+"Little ___ that the decision would cause controversy.|they knew/did they know/they had know/knew they|1|Little эхэнд → инверсия.|тэд мэдсэн/тэд мэдсэн/тэд мэдсэн/мэдсэн тэд",
+"It is imperative that the policy ___ reviewed.|is/be/was/will be|1|Subjunctive: үндсэн хэлбэр (be).|байна/байх/байсан/байх",
+"The solution is ___ practical nor affordable.|either/neither/both/whether|1|Neither...nor = аль нь ч биш.|аль нэг/аль нь ч биш/хоёулаа/эсэх",
+"The evidence is compelling, ___ not conclusive.|albeit/because/unless/therefore|0|Albeit = хэдийгээр.|хэдийгээр/-с/хэрэв/тиймээс",
+"Under no circumstances ___ this rule be ignored.|can/should/does/has|1|Under no circumstances → инверсия.|чадна/ёстой/хийдэг/байна",
+"So difficult ___ the task that many gave up.|was/were/is/be|0|So + adjective эхэнд → инверсия.|байсан/байсан/байна/байх",
+"The issue is far from ___.|resolve/resolved/resolving/resolution|1|Far from + past participle/adjective.|шийдэх/шийдэгдсэн/шийдэх/шийдэл",
+"She is anything but ___.|ordinary/ordinarily/ordinariness/order|0|Anything but + adjective = огт биш.|энгийн/энгийнээр/энгийн байдал/дэг журам",
+"The evidence falls short ___ proving the claim.|of/from/to/at|0|Fall short of гэсэн тогтсон хэллэг.|-аас/-аас/руу/-д",
+"The findings lend ___ to the theory.|support/supporting/supported/supports|0|Lend support to гэсэн тогтсон хэллэг.|дэмжлэг/дэмжих/дэмжсэн/дэмжлэг"],
+v:[
+"The claim is not ___ by the evidence.|substantiated/decorated/translated/transported|0|Substantiated = нотлогдсон.|нотлогдсон/чимэглэсэн/орчуулсан/тээвэрлэсэн",
+"The argument rests on a ___ distinction.|subtle/noisy/edible/rectangular|0|Subtle = нарийн, анзаарахад хэцүү.|нарийн/чимээтэй/идэж болох/тэгш өнцөгт",
+"The conclusion is ___ from the premises.|inferred/borrowed/decorated/repaired|0|Inferred = дүгнэж гаргасан.|дүгнэсэн/зээлсэн/чимэглэсэн/зассан",
+"The article offers a ___ critique.|trenchant/sleepy/plastic/casual|0|Trenchant = хурц, нөлөөтэй.|хурц/нойрмог/хуванцар/энгийн",
+"The new evidence ___ the earlier theory.|undermines/celebrates/delivers/folds|0|Undermine = сулруулах, эвдэх.|сулруулсан/тэмдэглэсэн/хүргэсэн/эвхсэн",
+"The decision is likely to ___ provoke controversy.|provoke/borrow/repair/translate|0|Provoke controversy = маргаан үүсгэх.|үүсгэх/зээлэх/засах/орчуулах"]}
+};
+
+const LEVELS = ["A1","A2","B1","B2","C1","C2"];
+const PER_TEST = 30, POOL_SIZE = 300, SET_COUNT = POOL_SIZE / PER_TEST, EESH_MAX = 800;
+
+function buildPool(baseArr, level, type) {
+  const out = [];
+  for (let i = 0; i < POOL_SIZE; i++) {
+    const src = baseArr[i % baseArr.length];
+    const p = src.split("|");
+    out.push({
+      id: `${level}-${type}-${i+1}`,
+      question: p[0],
+      options: p[1].split("/"),
+      answer: Number(p[2]),
+      explanation: p[3],
+      optionsMn: p[4] ? p[4].split("/") : [],
+      type: type === "g" ? "grammar" : "vocabulary",
+      level
+    });
+  }
+  return out;
+}
+const QUESTION_BANK = {};
+LEVELS.forEach(L => { QUESTION_BANK[L] = { grammar: buildPool(RAW[L].g, L, "g"), vocabulary: buildPool(RAW[L].v, L, "v") }; });
+
+function to800(c, t){ return t ? Math.round(c / t * EESH_MAX) : 0; }
+function eeshLevel(s){
+  if(s>=750) return {label:"🏆 Маш сайн (ЭЕШ A+)",cls:"gold"};
+  if(s>=650) return {label:"🥇 Сайн (ЭЕШ A)",cls:"good"};
+  if(s>=550) return {label:"🥈 Дунд (ЭЕШ B)",cls:"good"};
+  if(s>=450) return {label:"🥉 Хангалттай (ЭЕШ C)",cls:"mid"};
+  if(s>=320) return {label:"📚 Хангалтгүй (ЭЕШ D)",cls:"mid"};
+  return {label:"💪 Дахин бэлтгэх (ЭЕШ F)",cls:"bad"};
+}
+
+const LS_USERS="eesh_users", LS_SESSION="eesh_session", LS_DARK="eesh_dark";
+function getUsers(){try{return JSON.parse(localStorage.getItem(LS_USERS)||"{}")}catch(e){return{}}}
+function saveUsers(u){try{localStorage.setItem(LS_USERS,JSON.stringify(u))}catch(e){}}
+function hash(s){let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}return "h"+Math.abs(h).toString(36)}
+function currentUser(){try{return localStorage.getItem(LS_SESSION)}catch(e){return null}}
+function setSession(n){try{localStorage.setItem(LS_SESSION,n)}catch(e){}}
+function clearSession(){try{localStorage.removeItem(LS_SESSION)}catch(e){}}
+
+let currentUserName = null;
+
+function switchAuth(tab){
+  document.getElementById("tabLogin").classList.toggle("active",tab==="login");
+  document.getElementById("tabRegister").classList.toggle("active",tab==="register");
+  document.getElementById("loginForm").classList.toggle("hidden",tab!=="login");
+  document.getElementById("registerForm").classList.toggle("hidden",tab!=="register");
+  document.getElementById("loginError").textContent="";
+  document.getElementById("regError").textContent="";
+}
+function doRegister(){
+  const name=document.getElementById("regName").value.trim().toLowerCase();
+  const pass=document.getElementById("regPass").value;
+  const pass2=document.getElementById("regPass2").value;
+  const full=document.getElementById("regFullName").value.trim();
+  const err=document.getElementById("regError");
+  if(name.length<3) return err.textContent="Нэр 3+ тэмдэгт.";
+  if(!/^[a-z0-9_]+$/.test(name)) return err.textContent="Зөвхөн латин, тоо, _.";
+  if(pass.length<4) return err.textContent="Нууц үг 4+.";
+  if(pass!==pass2) return err.textContent="Нууц үг таарахгүй.";
+  const users=getUsers();
+  if(users[name]) return err.textContent="Энэ нэр бүртгэгдсэн.";
+  users[name]={name,fullName:full,passHash:hash(pass),createdAt:new Date().toISOString()};
+  saveUsers(users); err.textContent="";
+  alert("✅ Бүртгэгдлээ!"); switchAuth("login");
+  document.getElementById("loginName").value=name;
+}
+function doLogin(){
+  const name=document.getElementById("loginName").value.trim().toLowerCase();
+  const pass=document.getElementById("loginPass").value;
+  const err=document.getElementById("loginError");
+  const users=getUsers();
+  if(!users[name]) return err.textContent="Хэрэглэгч олдсонгүй.";
+  if(users[name].passHash!==hash(pass)) return err.textContent="Нууц үг буруу.";
+  err.textContent=""; setSession(name); currentUserName=name; enterApp();
+}
+function doLogout(){
+  if(!confirm("Гарах уу?")) return;
+  clearSession(); currentUserName=null;
+  showOnly("authScreen");
+  document.getElementById("userInfo").innerHTML="";
+  document.getElementById("loginPass").value="";
+}
+
+function getHistory(){
+  if(!currentUserName) return [];
+  try{const all=JSON.parse(localStorage.getItem("eesh_history")||"{}");return all[currentUserName]||[]}catch(e){return[]}
+}
+function saveHistory(entry){
+  if(!currentUserName) return;
+  try{
+    const all=JSON.parse(localStorage.getItem("eesh_history")||"{}");
+    if(!all[currentUserName]) all[currentUserName]=[];
+    all[currentUserName].unshift(entry);
+    all[currentUserName]=all[currentUserName].slice(0,200);
+    localStorage.setItem("eesh_history",JSON.stringify(all));
+  }catch(e){}
+}
+function clearHistory(){
+  if(!currentUserName) return;
+  if(!confirm("Бүх түүхийг устгах уу?")) return;
+  try{const all=JSON.parse(localStorage.getItem("eesh_history")||"{}");all[currentUserName]=[];localStorage.setItem("eesh_history",JSON.stringify(all))}catch(e){}
+  renderHistory("all");
+}
+
+const SCREENS=["authScreen","home","quiz","result","profile","history","logoPage"];
+function showOnly(id){ SCREENS.forEach(s=>document.getElementById(s).classList.toggle("hidden",s!==id)); }
+
+function enterApp(){
+  const u=getUsers()[currentUserName];
+  document.getElementById("userInfo").innerHTML=
+    `<b>${escapeHTML(u.fullName||u.name)}</b> <button class="secondary" onclick="showProfile()">👤</button> <button class="secondary" onclick="showHistory()">📜</button> <button class="secondary" onclick="doLogout()">🚪</button>`;
+  document.getElementById("helloName").textContent=u.fullName||u.name;
+  showOnly("home"); updateSelectionText();
+}
+function goHome(){ showOnly("home"); document.getElementById("progressBar").style.width="0%"; }
+function showLogoPage(){ showOnly("logoPage"); }
+
+function showProfile(){
+  const u=getUsers()[currentUserName]; if(!u) return;
+  const hist=getHistory();
+  document.getElementById("profileAvatar").textContent=(u.fullName||u.name).charAt(0).toUpperCase();
+  document.getElementById("profileName").textContent="@"+u.name;
+  document.getElementById("profileFullName").textContent=u.fullName||"—";
+  const total=hist.length;
+  const total800=hist.reduce((s,h)=>s+(h.score800||0),0);
+  const avg800=total?Math.round(total800/total):0;
+  const best=total?Math.max(...hist.map(h=>h.score800||0)):0;
+  document.getElementById("profileStats").innerHTML=`
+    <div class="stat"><b>${total}</b>Тест өгсөн</div>
+    <div class="stat gold"><b>${avg800}</b>Дундаж /800</div>
+    <div class="stat gold"><b>${best}</b>Хамгийн өндөр</div>
+    <div class="stat"><b>${best>=750?"🏆":best>=650?"🥇":best>=550?"🥈":best>=450?"🥉":"📚"}</b>ЭЕШ түвшин</div>`;
+  document.getElementById("profileRecent").innerHTML=hist.length
+    ? hist.slice(0,5).map(renderHistoryItem).join("")
+    : `<p class="small">Одоогоор тест өгөөгүй.</p>`;
+  showOnly("profile");
+}
+
+let historyFilter="all";
+function showHistory(){ renderHistory(historyFilter); showOnly("history"); }
+function filterHistory(f){
+  historyFilter=f;
+  document.querySelectorAll("#history .tabs button").forEach(b=>b.classList.remove("active"));
+  const map={all:"fAll",A1:"fA1",A2:"fA2",B1:"fB1",B2:"fB2",C1:"fC1",C2:"fC2"};
+  document.getElementById(map[f]).classList.add("active");
+  renderHistory(f);
+}
+function renderHistory(filter){
+  let hist=getHistory();
+  if(filter!=="all") hist=hist.filter(h=>h.level===filter);
+  const list=document.getElementById("historyList");
+  if(!hist.length){ list.innerHTML=`<p class="small">Түүх хоосон.</p>`; return; }
+  list.innerHTML=hist.map(renderHistoryItem).join("");
+}
+function renderHistoryItem(h){
+  const s=h.score800||0, lv=eeshLevel(s);
+  const d=new Date(h.date);
+  const dateStr=d.toLocaleString("mn-MN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+  return `<div class="history-item"><div>
+      <div><b>${h.level}</b> • ${escapeHTML(h.mode)} • Тест ${h.set}/${SET_COUNT}</div>
+      <div class="small">${dateStr}</div></div>
+    <div style="text-align:right"><div><b>🎯 ${s}/800</b></div>
+      <span class="badge ${lv.cls}">${h.percentage}%</span></div></div>`;
+}
+
+let selectedLevel=null, selectedMode="grammar";
+let currentTest=[], currentQuestionIndex=0, correctAnswers=0, wrongAnswers=[], answered=false, currentSet=1;
+let userAnswers = [];
+
+const $=id=>document.getElementById(id);
+const modeName=m=>m==="grammar"?"Grammar":m==="vocabulary"?"Vocabulary":"Mixed (ЭЕШ)";
+
+function getSeen(level){
+  if(!currentUserName) return [];
+  try{return JSON.parse(localStorage.getItem("eesh_seen_"+currentUserName+"_"+level)||"[]")}catch(e){return[]}
+}
+function saveSeen(level,ids){
+  if(!currentUserName) return;
+  try{
+    const key="eesh_seen_"+currentUserName+"_"+level;
+    const cur=getSeen(level);
+    localStorage.setItem(key,JSON.stringify([...new Set([...cur,...ids])]));
+  }catch(e){}
+}
+function clearSeen(level){
+  if(!currentUserName) return;
+  try{localStorage.removeItem("eesh_seen_"+currentUserName+"_"+level)}catch(e){}
+}
+
+function buildLevelButtons(){
+  const names={A1:"Beginner",A2:"Elementary",B1:"Intermediate",B2:"Upper-Int",C1:"Advanced",C2:"Proficient"};
+  $("levelBtns").innerHTML=LEVELS.map(l=>
+    `<button data-l="${l}" onclick="selectLevel('${l}')">${l}<br><small>${names[l]}</small></button>`
+  ).join("");
+}
+function selectLevel(l){ selectedLevel=l; updateSelectionText(); }
+function selectMode(m){ selectedMode=m; updateSelectionText(); }
+function updateSelectionText(){
+  document.querySelectorAll("#levelBtns button").forEach(b=>b.classList.toggle("sel",b.dataset.l===selectedLevel));
+  document.querySelectorAll("#modeBtns button").forEach(b=>b.classList.toggle("sel",b.dataset.m===selectedMode));
+  $("selection").textContent=selectedLevel
+    ?"Сонгосон: "+selectedLevel+" • "+modeName(selectedMode)
+    :"Түвшин болон тестийн төрлөө сонгоно уу.";
+  $("setInfo").textContent=selectedLevel
+    ?`Нийт ${POOL_SIZE} асуулт, ${SET_COUNT} тест (${PER_TEST} асуулт/тест) • Оноо 800-аар`
+    :"";
+}
+
+function shuffleArray(a){
+  const c=[...a];
+  for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}
+  return c;
+}
+function getTestPool(){
+  const b=QUESTION_BANK[selectedLevel];
+  if(selectedMode==="grammar") return [...b.grammar];
+  if(selectedMode==="vocabulary") return [...b.vocabulary];
+  return [...b.grammar.slice(0,150),...b.vocabulary.slice(0,150)];
+}
+
+function startTest(){
+  if(!selectedLevel) return alert("Эхлээд түвшин сонгоно уу.");
+  const pool=getTestPool();
+  const size=Math.min(PER_TEST,pool.length);
+  const seen=new Set(getSeen(selectedLevel));
+  let fresh=pool.filter(q=>!seen.has(q.id));
+  if(fresh.length<size){
+    if(!confirm(`Шинэ асуулт ${fresh.length} үлдсэн. Хуучин асуултуудыг дахин ашиглах уу?`)) return;
+    clearSeen(selectedLevel); fresh=pool;
+  }
+  currentTest=shuffleArray(fresh).slice(0,size);
+  currentQuestionIndex=0; correctAnswers=0; wrongAnswers=[]; answered=false; userAnswers=[];
+  const totalSeen=getSeen(selectedLevel).length;
+  currentSet=Math.min(Math.floor(totalSeen/PER_TEST)+1,SET_COUNT);
+  showOnly("quiz");
+  $("setLabel").textContent=`Тест ${currentSet}/${SET_COUNT}`;
+  showQuestion();
+}
+
+/* === ТЕСТ ЯВАХ ҮЕД ЗӨВХӨН АНГЛИ === */
+function showQuestion(){
+  const q=currentTest[currentQuestionIndex];
+  if(!q) return finishTest();
+  answered=false;
+  $("questionNumber").textContent=(currentQuestionIndex+1)+" / "+currentTest.length;
+  $("currentScore").textContent="🎯 "+to800(correctAnswers,currentQuestionIndex+1)+"/800";
+  $("progressBar").style.width=(currentQuestionIndex/currentTest.length*100)+"%";
+  $("questionText").textContent=q.question;
+  $("feedback").className="hidden"; $("feedback").innerHTML="";
+  $("nextButton").classList.add("hidden");
+  const box=$("options"); box.innerHTML="";
+  shuffleArray(q.options.map((t,i)=>({t,i}))).forEach((o,idx)=>{
+    const b=document.createElement("button");
+    b.className="option";
+    b.textContent=String.fromCharCode(65+idx)+". "+o.t;
+    b.dataset.i=o.i;
+    b.onclick=()=>answerQuestion(o.i,b);
+    box.appendChild(b);
+  });
+}
+
+/* === ТЕСТ ЯВАХ ҮЕД FEEDBACK — ЗӨВХӨН АНГЛИ + МОНГОЛ ТАЙЛБАР === */
+function answerQuestion(sel,btn){
+  if(answered) return;
+  answered=true;
+  const q=currentTest[currentQuestionIndex];
+  userAnswers.push({idx:currentQuestionIndex, selected:sel});
+
+  document.querySelectorAll("#options .option").forEach(b=>{
+    if(Number(b.dataset.i)===q.answer) b.classList.add("correct");
+  });
+
+  if(sel===q.answer){
+    correctAnswers++;
+    showFeedback(true,
+      "<b>✓ Зөв хариулт!</b><br><br>" +
+      "<b>Зөв хариулт:</b> " + escapeHTML(q.options[q.answer]) + "<br><br>" +
+      "<b>💡 Тайлбар:</b> " + escapeHTML(q.explanation));
+  }else{
+    btn.classList.add("wrong");
+    const u=q.options[sel], c=q.options[q.answer];
+    wrongAnswers.push({
+      question:q.question, userAnswer:u, correctAnswer:c,
+      explanation:q.explanation
+    });
+    showFeedback(false,
+      "<b>✗ Буруу хариулт.</b><br><br>" +
+      "<b>Таны хариулт:</b> " + escapeHTML(u) + "<br><br>" +
+      "<b>Зөв хариулт:</b> " + escapeHTML(c) + "<br><br>" +
+      "<b>💡 Тайлбар:</b> " + escapeHTML(q.explanation));
+  }
+  saveSeen(selectedLevel,[q.id]);
+  $("currentScore").textContent="🎯 "+to800(correctAnswers,currentQuestionIndex+1)+"/800";
+  $("nextButton").classList.remove("hidden");
+}
+function showFeedback(ok,html){
+  const f=$("feedback");
+  f.className="feedback "+(ok?"good":"bad");
+  f.innerHTML=html;
+}
+function nextQuestion(){
+  if(!answered) return;
+  currentQuestionIndex++;
+  currentQuestionIndex>=currentTest.length ? finishTest() : showQuestion();
+}
+
+function finishTest(){
+  $("progressBar").style.width="100%";
+  showOnly("result");
+  const total=currentTest.length;
+  const pct=correctAnswers/total*100;
+  const r=pct.toFixed(1);
+  const score800=to800(correctAnswers,total);
+  const lv=eeshLevel(score800);
+  const u=getUsers()[currentUserName];
+  const need800=Math.ceil(total*1.0);
+  const need700=Math.ceil(total*700/800);
+  const need600=Math.ceil(total*600/800);
+
+  $("resultContent").innerHTML=`
+    <div class="score-hero">
+      <div class="lbl">ЭЕШ-ийн оноо</div>
+      <div class="big">${score800}<span style="font-size:24px">/800</span></div>
+      <div style="margin-top:8px;font-weight:bold">${lv.label}</div>
+    </div>
+    <div class="card">
+      <p><b>${u.fullName?escapeHTML(u.fullName)+", ":" "}</b>${getResultMessage(pct)}</p>
+      <p>Түвшин: <b>${selectedLevel}</b> • Тест: <b>${modeName(selectedMode)}</b> • №<b>${currentSet}/${SET_COUNT}</b></p>
+      <p>Зөв: <b>${correctAnswers}/${total}</b> (<b>${r}%</b>)</p>
+      <hr style="border:none;border-top:1px solid var(--border);margin:12px 0">
+      <p class="small">🎯 <b>800 оноо</b> авахын тулд: <b>${need800}/${total}</b> зөв</p>
+      <p class="small">🎯 <b>700 оноо</b> авахын тулд: <b>${need700}/${total}</b> зөв</p>
+      <p class="small">🎯 <b>600 оноо</b> авахын тулд: <b>${need600}/${total}</b> зөв</p>
+    </div>`;
+
+  /* === ТЕСТ ДУУССАНЫ ДАРАА — МОНГОЛ ОРЧУУЛГАТАЙ === */
+  $("fullReview").innerHTML = currentTest.map((q, i) => {
+    const ua = userAnswers.find(x => x.idx === i);
+    const sel = ua ? ua.selected : null;
+    const isCorrect = sel === q.answer;
+    const userText = sel !== null ? q.options[sel] : "(хариулаагүй)";
+    const userMn = sel !== null ? (q.optionsMn[sel] || "") : "";
+    const ansText = q.options[q.answer];
+    const ansMn = q.optionsMn[q.answer] || "";
+    const allOpts = q.options.map((opt, idx) => {
+      const mn = q.optionsMn[idx] || "";
+      const isAns = idx === q.answer;
+      const isUser = idx === sel;
+      let mark = "";
+      if (isAns) mark = " ✅";
+      if (isUser && !isAns) mark = " ❌";
+      return `<div style="padding:4px 8px;border-radius:6px;margin:2px 0;font-size:13px;
+        ${isAns?'background:#16a34a15;':isUser?'background:#dc262615;':''}">
+        <b>${String.fromCharCode(65+idx)}.</b> ${escapeHTML(opt)}
+        ${mn ? `<span style="color:var(--muted)"> 🇲🇳 ${escapeHTML(mn)}</span>` : ""}${mark}
+      </div>`;
+    }).join("");
+    return `
+      <div class="review-item ${isCorrect?"":"wrong"}">
+        <div class="q-text"><span class="q-num">${i+1}</span> ${escapeHTML(q.question)}</div>
+        <div class="ans-line user">
+          <b>Таны хариулт:</b> ${escapeHTML(userText)}
+          ${userMn ? `<div class="mn-line">🇲🇳 ${escapeHTML(userMn)}</div>` : ""}
+          ${isCorrect ? " ✅" : " ❌"}
+        </div>
+        <div class="ans-line correct">
+          <b>Зөв хариулт:</b> ${escapeHTML(ansText)}
+          ${ansMn ? `<div class="mn-line">🇲🇳 ${escapeHTML(ansMn)}</div>` : ""}
+        </div>
+        <div style="margin-top:8px;padding:8px;background:#2563eb08;border-radius:8px">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px"><b>Бүх сонголт (Монгол орчуулгатай):</b></div>
+          ${allOpts}
+        </div>
+        <div class="exp"><b>💡 Тайлбар:</b> ${escapeHTML(q.explanation)}</div>
+      </div>`;
+  }).join("");
+
+  saveHistory({
+    level:selectedLevel, mode:selectedMode, set:currentSet,
+    score:correctAnswers, total, score800, percentage:Number(r),
+    date:new Date().toISOString()
+  });
+}
+function getResultMessage(p){
+  if(p>=95) return "🔥 ЭЕШ-д 800 авах боломжтой! 🏆";
+  if(p>=85) return "👏 Маш сайн! 700+ оноо гарна!";
+  if(p>=70) return "👍 Сайн! 600+ оноо руу явж байна.";
+  if(p>=55) return "🙂 Дунд. Дахин давтаж 700+ гаргаарай.";
+  if(p>=40) return "📚 Grammar + Vocabulary-гоо дахин үзээрэй.";
+  return "💪 12-р анги, цаг байна! Бэлтгэлээ үргэлжлүүлээрэй.";
+}
+function escapeHTML(v){
+  return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+
+function toggleDark(){
+  document.body.classList.toggle("dark");
+  try{localStorage.setItem(LS_DARK,document.body.classList.contains("dark")?"1":"0")}catch(e){}
+}
+function loadDarkMode(){
+  try{ if(localStorage.getItem(LS_DARK)==="1") document.body.classList.add("dark"); }catch(e){}
+}
+
+function downloadSVG(){
+  const svgNS="http://www.w3.org/2000/svg";
+  const svg=document.createElementNS(svgNS,"svg");
+  svg.setAttribute("xmlns",svgNS); svg.setAttribute("viewBox","0 0 380 380");
+  svg.setAttribute("width","380"); svg.setAttribute("height","380");
+  svg.appendChild(document.querySelector("svg defs").cloneNode(true));
+  svg.appendChild(document.querySelector("#logo-symbol").cloneNode(true));
+  const useSvg=document.createElementNS(svgNS,"use");
+  useSvg.setAttribute("href","#logo-symbol");
+  svg.appendChild(useSvg);
+  const data=new XMLSerializer().serializeToString(svg);
+  const blob=new Blob([data],{type:"image/svg+xml;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a"); a.href=url; a.download="12B-logo.svg"; a.click();
+  URL.revokeObjectURL(url);
+}
+function downloadPNG(){
+  const svg=document.getElementById("bigLogo");
+  const data=new XMLSerializer().serializeToString(svg);
+  const full=data.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg"');
+  const svgBlob=new Blob([full],{type:"image/svg+xml;charset=utf-8"});
+  const url=URL.createObjectURL(svgBlob);
+  const img=new Image();
+  img.onload=()=>{
+    const canvas=document.createElement("canvas");
+    canvas.width=1000; canvas.height=1000;
+    const ctx=canvas.getContext("2d");
+    ctx.fillStyle="#0a0f1e"; ctx.fillRect(0,0,1000,1000);
+    ctx.drawImage(img,0,0,1000,1000);
+    const a=document.createElement("a");
+    a.href=canvas.toDataURL("image/png");
+    a.download="12B-logo.png"; a.click();
+    URL.revokeObjectURL(url);
+  };
+  img.src=url;
+}
+
+buildLevelButtons();
+updateSelectionText();
+loadDarkMode();
+(function init(){
+  const name=currentUser();
+  if(name && getUsers()[name]){ currentUserName=name; enterApp(); }
+  else{ showOnly("authScreen"); }
+})();
+document.getElementById("loginPass").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin()});
+document.getElementById("regPass2").addEventListener("keydown",e=>{if(e.key==="Enter")doRegister()});
+</script>
+</body>
+</html>
